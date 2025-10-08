@@ -71,6 +71,7 @@
 - [Zapier Integration](https://zapier.com/apps/letta/integrations) - Use Letta with Zapier
 - [Telegram](https://github.com/letta-ai/letta-telegram) - A Modal application for serving a Letta agent on Telegram.
 - [Obsidian](https://github.com/letta-ai/letta-obsidian) - A Obsidian plugin for serving a Letta agent on Obsidian.
+- [n8n](https://github.com/letta-ai/n8n-nodes-letta) - Connect your Letta agent to n8n workflows.
 
 ### Community Tools
 <!-- Add community-built tools here -->
