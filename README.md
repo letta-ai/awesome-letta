@@ -75,7 +75,9 @@
 
 ### Community Tools
 <!-- Add community-built tools here -->
-- Your tool here! - Submit a PR
+- [Discord Integration Tool](https://github.com/Duzafizzl/awesome-lettatools-by-Miore/tree/main/discord_tools) - All-in-one Discord bot integration with proactive messaging, heartbeats, scheduled tasks, file downloads, and channel management
+- [Spotify Control Tool](https://github.com/Duzafizzl/awesome-lettatools-by-Miore/tree/main/spotify_tool) - Complete Spotify integration for Letta agents (play/pause, skip, volume, search, queue management)
+- [Letta Management Tools](https://github.com/Duzafizzl/awesome-lettatools-by-Miore/tree/main/management_tools) - CLI utilities for managing Letta tools (pull/push, compare, list, agent tool management)
 
 ### Development Tools
 - [Letta CLI](https://docs.letta.com/cli) - Command-line interface for Letta
