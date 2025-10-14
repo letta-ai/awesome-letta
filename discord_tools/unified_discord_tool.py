@@ -15,6 +15,9 @@ USAGE EXAMPLES:
 1. SEND MESSAGES:
    discord_tool(action="send_message", message="Hello!", target="1234567890", target_type="channel")
    discord_tool(action="send_message", message="Hi there!", target="1234567890", target_type="user")
+   discord_tool(action="send_message", message="Check this!", target="1234567890", target_type="channel", mention_users=["701608830852792391"])
+   discord_tool(action="send_message", message="Important!", target="1234567890", target_type="channel", ping_everyone=True)
+   # Auto-chunks messages over 2000 characters
 
 2. READ MESSAGES:
    discord_tool(action="read_messages", target="1234567890", target_type="channel", limit=50)
@@ -52,6 +55,9 @@ def discord_tool(
     message: str = None,
     target: str = None,
     target_type: str = None,  # "user" or "channel"
+    mention_users: list = None,  # List of user IDs to mention
+    ping_everyone: bool = False,  # Ping @everyone (channel only)
+    ping_here: bool = False,  # Ping @here (channel only)
     # Read parameters
     limit: int = 50,
     time_filter: str = "all",
@@ -81,17 +87,17 @@ def discord_tool(
         ... (other parameters depend on action)
     """
     
-    # Configuration
-    DISCORD_BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN",")
-    TASKS_CHANNEL_ID = os.getenv("TASKS_CHANNEL_ID")
-    DEFAULT_USER_ID = os.getenv("DEFAULT_USER_ID")
+      # Configuration
+    DISCORD_BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN", "YOUR_DISCORD_BOT_TOKEN_HERE")
+    TASKS_CHANNEL_ID = os.getenv("TASKS_CHANNEL_ID", "YOUR_TASKS_CHANNEL_ID_HERE")
+    DEFAULT_USER_ID = os.getenv("DEFAULT_USER_ID", "YOUR_DEFAULT_USER_ID_HERE")
     
     if DISCORD_BOT_TOKEN == "YOUR_DISCORD_BOT_TOKEN_HERE":
         return {"status": "error", "message": "Discord bot token not configured. Please set DISCORD_BOT_TOKEN environment variable."}
     
     try:
         if action == "send_message":
-            return _send_message(DISCORD_BOT_TOKEN, message, target, target_type)
+            return _send_message(DISCORD_BOT_TOKEN, message, target, target_type, mention_users, ping_everyone, ping_here)
         
         elif action == "read_messages":
             return _read_messages(DISCORD_BOT_TOKEN, target, target_type, limit, time_filter, timezone, show_both)
@@ -119,8 +125,8 @@ def discord_tool(
     except Exception as e:
         return {"status": "error", "message": f"Error: {str(e)}"}
 
-def _send_message(bot_token, message, target, target_type):
-    """Send a message to Discord (DM or channel)."""
+def _send_message(bot_token, message, target, target_type, mention_users=None, ping_everyone=False, ping_here=False):
+    """Send a message to Discord (DM or channel) with auto-chunking and mentions."""
     headers = {"Authorization": f"Bot {bot_token}", "Content-Type": "application/json"}
     
     # Auto-detect target type if not specified
@@ -152,22 +158,80 @@ def _send_message(bot_token, message, target, target_type):
         else:
             channel_id = target
     
-    # Send message
-    message_url = f"https://discord.com/api/v10/channels/{channel_id}/messages"
-    message_data = {"content": message}
+    # Build mentions
+    mentions_text = ""
+    if target_type == "channel":  # Mentions only work in channels, not DMs
+        if ping_everyone:
+            mentions_text = "@everyone "
+        elif ping_here:
+            mentions_text = "@here "
+        elif mention_users:
+            mentions_text = " ".join([f"<@{user_id}>" for user_id in mention_users]) + " "
     
-    response = requests.post(message_url, headers=headers, json=message_data, timeout=10)
+    # Prepend mentions to message
+    full_message = mentions_text + message if mentions_text else message
     
-    if response.status_code in (200, 201):
-        return {
-            "status": "success",
-            "message": f"Message sent to {target_type} {target}",
-            "message_id": response.json()["id"],
-            "channel_id": channel_id,
-            "target_type": target_type
-        }
+    # Auto-chunk messages over 2000 characters
+    MAX_LENGTH = 2000
+    if len(full_message) <= MAX_LENGTH:
+        chunks = [full_message]
     else:
-        return {"status": "error", "message": f"Failed to send message: {response.text}"}
+        # Split by newlines first to preserve message structure
+        chunks = []
+        current_chunk = ""
+        
+        for line in full_message.split('\n'):
+            if len(current_chunk) + len(line) + 1 <= MAX_LENGTH:
+                current_chunk += line + '\n'
+            else:
+                if current_chunk:
+                    chunks.append(current_chunk.rstrip('\n'))
+                current_chunk = line + '\n'
+        
+        if current_chunk:
+            chunks.append(current_chunk.rstrip('\n'))
+        
+        # If a single line is too long, force split it
+        final_chunks = []
+        for chunk in chunks:
+            if len(chunk) <= MAX_LENGTH:
+                final_chunks.append(chunk)
+            else:
+                # Force split long chunk
+                for i in range(0, len(chunk), MAX_LENGTH):
+                    final_chunks.append(chunk[i:i+MAX_LENGTH])
+        chunks = final_chunks
+    
+    # Send all chunks
+    message_url = f"https://discord.com/api/v10/channels/{channel_id}/messages"
+    sent_messages = []
+    
+    for i, chunk in enumerate(chunks):
+        message_data = {"content": chunk}
+        response = requests.post(message_url, headers=headers, json=message_data, timeout=10)
+        
+        if response.status_code in (200, 201):
+            sent_messages.append({
+                "message_id": response.json()["id"],
+                "chunk": i + 1,
+                "total_chunks": len(chunks)
+            })
+        else:
+            return {
+                "status": "error", 
+                "message": f"Failed to send chunk {i+1}/{len(chunks)}: {response.text}",
+                "sent_chunks": sent_messages
+            }
+    
+    return {
+        "status": "success",
+        "message": f"Message sent to {target_type} {target} ({len(chunks)} chunk{'s' if len(chunks) > 1 else ''})",
+        "message_ids": [msg["message_id"] for msg in sent_messages],
+        "chunks_sent": len(chunks),
+        "channel_id": channel_id,
+        "target_type": target_type,
+        "mentions_added": bool(mentions_text)
+    }
 
 def _read_messages(bot_token, target, target_type, limit, time_filter, timezone, show_both):
     """Read messages from Discord (DM or channel)."""

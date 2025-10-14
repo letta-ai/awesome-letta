@@ -1,0 +1,125 @@
+{
+    "name": "discord_tool",
+    "description": "Unified Discord integration tool for PROACTIVE operations and automation. Use this for: sending proactive messages during heartbeats or scheduled tasks, reading Discord channels/DMs for context, downloading files, listing channels, and managing scheduled tasks. IMPORTANT: For responding to the user in conversation, ALWAYS use the standard send_message tool instead. This tool is ONLY for proactive/scheduled Discord operations.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "send_message",
+            "read_messages",
+            "download_file",
+            "list_channels",
+            "create_task",
+            "delete_task",
+            "list_tasks"
+          ],
+          "description": "The action to perform. Choose from: send_message (send PROACTIVE DM or channel message during heartbeats/scheduled tasks - NOT for conversation replies!), read_messages (read DM or channel messages for context), download_file (download file from message), list_channels (list server channels), create_task (create scheduled task), delete_task (delete scheduled task), list_tasks (list all tasks). CRITICAL: Use standard send_message tool for conversation responses, NOT this tool!"
+        },
+        "message": {
+          "type": "string",
+          "description": "PROACTIVE message content to send during heartbeats or scheduled tasks (required for send_message action). Auto-chunks messages over 2000 characters. WARNING: Do NOT use this for conversation responses - use standard send_message tool instead!"
+        },
+        "target": {
+          "type": "string",
+          "description": "Target ID - user ID for DMs, channel ID for channels (required for send_message and read_messages actions)"
+        },
+        "target_type": {
+          "type": "string",
+          "enum": ["user", "channel"],
+          "description": "Type of target - 'user' for DMs, 'channel' for channel messages (optional, auto-detected if not specified)"
+        },
+        "mention_users": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of user IDs to mention/ping in the message (e.g. ['701608830852792391']). Only works in channels, not DMs. Formats as <@ID> in Discord."
+        },
+        "ping_everyone": {
+          "type": "boolean",
+          "default": false,
+          "description": "Ping @everyone in the channel (channel only, requires permissions). Mutually exclusive with ping_here and mention_users."
+        },
+        "ping_here": {
+          "type": "boolean",
+          "default": false,
+          "description": "Ping @here (online users) in the channel (channel only, requires permissions). Mutually exclusive with ping_everyone and mention_users."
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 50,
+          "description": "Maximum number of messages to retrieve (for read_messages action)"
+        },
+        "time_filter": {
+          "type": "string",
+          "enum": ["all", "today", "yesterday", "last_1_hours", "last_2_hours", "last_6_hours", "last_12_hours", "last_24_hours", "last_2_days", "last_7_days"],
+          "default": "all",
+          "description": "Time filter for reading messages: 'all', 'today', 'yesterday', or 'last_X_hours/days' (for read_messages action)"
+        },
+        "timezone": {
+          "type": "string",
+          "default": "Europe/Berlin",
+          "description": "Timezone for message timestamps (IANA timezone string, e.g. 'Europe/Berlin', 'America/New_York')"
+        },
+        "show_both": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show both UTC and local timestamps (for read_messages action)"
+        },
+        "message_id": {
+          "type": "string",
+          "description": "Discord message ID (required for download_file and delete_task actions)"
+        },
+        "channel_id": {
+          "type": "string",
+          "description": "Discord channel ID (required for download_file and delete_task actions)"
+        },
+        "server_id": {
+          "type": "string",
+          "description": "Discord server/guild ID (required for list_channels action)"
+        },
+        "task_name": {
+          "type": "string",
+          "description": "Name for the scheduled task (required for create_task action)"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the scheduled task (required for create_task action)"
+        },
+        "schedule": {
+          "type": "string",
+          "enum": ["daily", "weekly", "monthly", "hourly", "in_5_minutes", "in_10_minutes", "in_30_minutes", "in_1_hours", "in_2_hours", "tomorrow_at_09:00"],
+          "description": "Schedule for the task: 'daily', 'weekly', 'monthly', 'hourly', or 'in_X_minutes/hours', or 'tomorrow_at_HH:MM' (required for create_task action)"
+        },
+        "time": {
+          "type": "string",
+          "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$",
+          "description": "Time in HH:MM format (24-hour) for scheduled tasks (optional for create_task action)"
+        },
+        "action_type": {
+          "type": "string",
+          "enum": ["user_reminder", "channel_post"],
+          "description": "Type of action when task runs: 'user_reminder' (send DM) or 'channel_post' (post to channel) (required for create_task action)"
+        },
+        "action_target": {
+          "type": "string",
+          "description": "Target for task action: user ID for reminders, channel ID for posts (optional for create_task action, uses default if not specified)"
+        },
+        "action_template": {
+          "type": "string",
+          "description": "Message template to send when task runs (required for create_task action)"
+        },
+        "tasks_channel_id": {
+          "type": "string",
+          "description": "Channel ID where tasks are stored (optional for list_tasks action, uses default if not specified)"
+        }
+      },
+      "required": ["action"],
+      "additionalProperties": false
+    }
+  }
+  
