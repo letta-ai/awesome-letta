@@ -1,0 +1,55 @@
+{
+  "name": "spotify_control",
+  "description": "Control Spotify playback and manage playlists. Can search for music, play tracks/albums/playlists, control playback (pause, next, previous), get currently playing track, create playlists, add tracks to playlists, and hijack the playback queue by adding tracks to it!",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": [
+          "search",
+          "play",
+          "pause",
+          "next",
+          "previous",
+          "now_playing",
+          "create_playlist",
+          "add_to_playlist",
+          "add_to_queue",
+          "my_playlists"
+        ],
+        "description": "Action to perform:\n- search: Search for tracks, artists, albums, or playlists\n- play: Play a specific track, album, artist, or playlist\n- pause: Pause current playback\n- next: Skip to next track\n- previous: Skip to previous track\n- now_playing: Get currently playing track info\n- create_playlist: Create a new playlist\n- add_to_playlist: Add tracks to an existing playlist\n- add_to_queue: Add a track to the current playback queue (hijack mode!)\n- my_playlists: List user's playlists"
+      },
+      "query": {
+        "type": "string",
+        "description": "Search query (required for 'search' action). Example: 'bohemian rhapsody', 'queen', 'dark side of the moon'"
+      },
+      "spotify_id": {
+        "type": "string",
+        "description": "Spotify ID of content to play or playlist to modify. Required for 'play' and 'add_to_playlist' actions. Get IDs from search results."
+      },
+      "content_type": {
+        "type": "string",
+        "enum": ["track", "artist", "album", "playlist"],
+        "description": "Type of content for search or play actions. Defaults to 'track'."
+      },
+      "playlist_name": {
+        "type": "string",
+        "description": "Name for new playlist (required for 'create_playlist' action)"
+      },
+      "playlist_description": {
+        "type": "string",
+        "description": "Description for new playlist (optional for 'create_playlist' action)"
+      },
+      "track_ids": {
+        "type": "string",
+        "description": "Comma-separated list of Spotify track IDs to add to playlist (required for 'add_to_playlist' action). Example: '3n3Ppam7vgaVa1iaRUc9Lp,7ouMYWpwJ422jRcDASZB7P'"
+      },
+      "limit": {
+        "type": "integer",
+        "description": "Maximum number of results for search or list actions (1-50). Defaults to 10 for search, 20 for playlists."
+      }
+    },
+    "required": ["action"]
+  }
+}

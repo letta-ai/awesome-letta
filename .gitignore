@@ -1,0 +1,173 @@
+# ====================================
+# LETTA COMMUNITY TOOLS - GITIGNORE
+# ====================================
+# CRITICAL: Prevents accidental token/credential leaks
+# Created after security incident - NEVER remove these protections!
+
+# ====================================
+# CREDENTIALS & SECRETS (NEVER COMMIT!)
+# ====================================
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.env
+
+# Any file with "token", "secret", "key", "password" in name
+*token*
+*secret*
+*key*
+*password*
+*credentials*
+*auth*
+
+# Specific credential files
+discord_token.txt
+spotify_token.txt
+letta_token.txt
+api_keys.txt
+
+# Config files that might contain secrets
+config.json
+config.yaml
+config.yml
+settings.json
+secrets.json
+
+# ====================================
+# PERSONAL/PRIVATE DOCUMENTATION
+# ====================================
+
+# Personal notes and instructions (like the one I leaked!)
+*_INTEGRATION_FOR_PROMPT.md
+*_instructions.md
+*_private.md
+*_personal.md
+NOTES.md
+TODO_PRIVATE.md
+
+# ====================================
+# PYTHON
+# ====================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# ====================================
+# DOWNLOADED/GENERATED FILES
+# ====================================
+
+# Downloaded files from Discord
+downloaded_files/
+downloads/
+attachments/
+
+# Generated tool files
+pulled_tools/
+tools_backup/
+*.backup
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# ====================================
+# OS FILES
+# ====================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# ====================================
+# TEMPORARY FILES
+# ====================================
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.*.sw?
+
+# Cache
+.cache/
+*.cache
+
+# ====================================
+# SPECIFIC TO THIS PROJECT
+# ====================================
+
+# Never commit files with actual Discord/Spotify data
+spotify_tool/*_with_real_credentials.py
+discord_tools/*_with_real_token.py
+
+# Test files with real data
+*_test_real.py
+*_production.py
+*_prod.py
+
+# Backup files
+*.bak
+backup/
+
+# ====================================
+# ALLOW THESE (EXCEPTIONS)
+# ====================================
+
+# DO allow the .gitignore files in subdirectories
+!*/.gitignore
+
+# DO allow example/template files
+!*_example.*
+!*_template.*
+!*.example.*
+

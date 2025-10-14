@@ -1,0 +1,39 @@
+# Discord Bot Credentials
+# Add your actual tokens here - they will be ignored by git
+
+# Discord Bot Token
+DISCORD_BOT_TOKEN=YOUR_DISCORD_BOT_TOKEN_HERE
+
+# Discord Channel IDs
+TASKS_CHANNEL_ID=YOUR_TASKS_CHANNEL_ID_HERE
+DEFAULT_CHANNEL_ID=YOUR_DEFAULT_CHANNEL_ID_HERE
+
+# Discord User IDs
+DEFAULT_USER_ID=YOUR_DISCORD_USER_ID_HERE
+
+# Letta API Credentials
+LETTA_API_KEY=YOUR_LETTA_API_KEY_HERE
+LETTA_AGENT_ID=YOUR_LETTA_AGENT_ID_HERE
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

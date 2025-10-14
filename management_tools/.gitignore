@@ -1,0 +1,37 @@
+# Letta API Credentials
+# Add your actual API key here - it will be ignored by git
+
+# Letta API
+LETTA_API_KEY=YOUR_LETTA_API_KEY_HERE
+LETTA_AGENT_ID=YOUR_LETTA_AGENT_ID_HERE
+LETTA_BASE_URL=https://api.letta.com
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Output directories
+tools_output/
+tools-backup-*/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+/tmp/letta_tool_payload.json
