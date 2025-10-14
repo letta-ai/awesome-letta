@@ -92,8 +92,28 @@
         },
         "schedule": {
           "type": "string",
-          "enum": ["daily", "weekly", "monthly", "hourly", "in_5_minutes", "in_10_minutes", "in_30_minutes", "in_1_hours", "in_2_hours", "tomorrow_at_09:00"],
-          "description": "Schedule for the task: 'daily', 'weekly', 'monthly', 'hourly', or 'in_X_minutes/hours', or 'tomorrow_at_HH:MM' (required for create_task action)"
+          "description": "Schedule for the task. Supports: 'daily', 'weekly', 'monthly', 'yearly', 'hourly', 'minutely', 'on_date' (with specific_date), 'in_X_minutes', 'in_X_hours', 'in_X_seconds', 'today_at_HH:MM', 'tomorrow_at_HH:MM', 'every_X_minutes', 'every_X_hours', 'every_X_days', 'every_X_weeks'. Examples: 'daily', 'today_at_18:00', 'in_30_minutes', 'every_2_hours', 'on_date' (required for create_task action)"
+        },
+        "specific_date": {
+          "type": "string",
+          "description": "Specific date for one-time tasks in format 'YYYY-MM-DD' or 'DD.MM.YYYY'. Use with schedule='on_date'. Examples: '2025-12-25', '25.12.2025'. Date must be in the future. (optional for create_task action)"
+        },
+        "day_of_month": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 31,
+          "description": "Day of month (1-31) for monthly or yearly tasks. Use with schedule='monthly' or 'yearly'. Example: 15 for the 15th of each month. (optional for create_task action)"
+        },
+        "month": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12,
+          "description": "Month (1-12) for yearly tasks. Use with schedule='yearly' and day_of_month. Example: 12 for December. (optional for create_task action)"
+        },
+        "day_of_week": {
+          "type": "string",
+          "enum": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+          "description": "Day of week for weekly tasks. Use with schedule='weekly'. Example: 'monday' for every Monday. (optional for create_task action)"
         },
         "time": {
           "type": "string",

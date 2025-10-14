@@ -30,9 +30,45 @@ USAGE EXAMPLES:
    discord_tool(action="list_channels", server_id="1234567890")
 
 5. SCHEDULE TASKS:
+   # Today at specific time
+   discord_tool(action="create_task", task_name="evening_reminder", description="Reminder for today",
+                schedule="today_at_18:00", action_type="user_reminder",
+                action_target="USER_ID", action_template="Don't forget to check in!")
+   
+   # Daily reminder
    discord_tool(action="create_task", task_name="reminder", description="Daily reminder", 
                 schedule="daily", time="09:00", action_type="channel_post", 
                 action_target="1234567890", action_template="Good morning!")
+   
+   # Specific date (European format)
+   discord_tool(action="create_task", task_name="birthday", description="Mom's birthday",
+                schedule="on_date", specific_date="25.12.2025", time="10:00",
+                action_type="user_reminder", action_target="USER_ID", 
+                action_template="🎂 Happy Birthday Mom!")
+   
+   # Specific date (ISO format)
+   discord_tool(action="create_task", task_name="meeting", description="Important meeting",
+                schedule="on_date", specific_date="2025-11-15", time="14:30",
+                action_type="user_reminder", action_target="USER_ID",
+                action_template="Meeting in 30 minutes!")
+   
+   # Weekly on specific day
+   discord_tool(action="create_task", task_name="monday_standup", description="Weekly standup",
+                schedule="weekly", day_of_week="monday", time="09:00",
+                action_type="channel_post", action_target="CHANNEL_ID",
+                action_template="📅 Time for our weekly standup!")
+   
+   # Monthly on specific day
+   discord_tool(action="create_task", task_name="rent", description="Pay rent",
+                schedule="monthly", day_of_month=1, time="10:00",
+                action_type="user_reminder", action_target="USER_ID",
+                action_template="💰 Rent is due today!")
+   
+   # Yearly reminder
+   discord_tool(action="create_task", task_name="taxes", description="File taxes",
+                schedule="yearly", month=4, day_of_month=15, time="09:00",
+                action_type="user_reminder", action_target="USER_ID",
+                action_template="📊 Tax deadline is approaching!")
 
 6. DELETE TASKS:
    discord_tool(action="delete_task", message_id="1234567890", channel_id="1234567890")
@@ -73,6 +109,10 @@ def discord_tool(
     description: str = None,
     schedule: str = None,
     time: str = None,
+    specific_date: str = None,
+    day_of_month: int = None,
+    month: int = None,
+    day_of_week: str = None,
     action_type: str = None,
     action_target: str = None,
     action_template: str = None,
@@ -110,7 +150,8 @@ def discord_tool(
         
         elif action == "create_task":
             return _create_task(DISCORD_BOT_TOKEN, TASKS_CHANNEL_ID, DEFAULT_USER_ID, 
-                              task_name, description, schedule, time, action_type, 
+                              task_name, description, schedule, time, specific_date,
+                              day_of_month, month, day_of_week, action_type, 
                               action_target, action_template)
         
         elif action == "delete_task":
@@ -366,47 +407,296 @@ def _list_channels(bot_token, server_id):
     }
 
 def _create_task(bot_token, tasks_channel_id, default_user_id, task_name, description, 
-                schedule, time, action_type, action_target, action_template):
-    """Create a scheduled task."""
-    # This is a simplified version - you can expand this with full scheduling logic
-    now = datetime.now()
-    
-    task_data = {
-        "task_name": task_name,
-        "description": description,
-        "schedule": schedule,
-        "time": time,
-        "action_type": action_type,
-        "action_target": action_target or default_user_id,
-        "action_template": action_template,
-        "created_at": now.isoformat(),
-        "active": True
-    }
-    
-    # Post to tasks channel
-    headers = {"Authorization": f"Bot {bot_token}", "Content-Type": "application/json"}
-    message_url = f"https://discord.com/api/v10/channels/{tasks_channel_id}/messages"
-    
-    formatted_message = f"""📋 **Task: {task_name}**
+                schedule, time, specific_date, day_of_month, month, day_of_week, 
+                action_type, action_target, action_template):
+    """Create a scheduled task with enhanced date/time support."""
+    try:
+        now = datetime.now()
+        one_time = schedule.startswith("in_") or schedule.startswith("tomorrow_") or schedule.startswith("today_at_") or schedule == "on_date"
+        
+        # --- Calculate next run time ---
+        
+        # SPECIFIC DATE (one-time)
+        if schedule == "on_date" and specific_date:
+            # Parse date (support both formats)
+            if "." in specific_date:
+                # European format: DD.MM.YYYY
+                day, month_num, year = map(int, specific_date.split("."))
+                next_run = datetime(year, month_num, day, 0, 0, 0)
+            elif "-" in specific_date:
+                # ISO format: YYYY-MM-DD
+                year, month_num, day = map(int, specific_date.split("-"))
+                next_run = datetime(year, month_num, day, 0, 0, 0)
+            else:
+                return {"status": "error", "message": "specific_date must be in format YYYY-MM-DD or DD.MM.YYYY"}
+            
+            # Set time if provided
+            if time:
+                hour, minute = map(int, time.split(":"))
+                next_run = next_run.replace(hour=hour, minute=minute)
+            
+            # Validate date is in future
+            if next_run <= now:
+                return {
+                    "status": "error", 
+                    "message": f"Date {specific_date} {time or '00:00'} is in the past! Please choose a future date."
+                }
+        
+        # ONE-TIME schedules
+        elif schedule.startswith("in_") and schedule.endswith("_minutes"):
+            minutes = int(schedule.split("_")[1])
+            next_run = now + timedelta(minutes=minutes)
+        elif schedule.startswith("in_") and schedule.endswith("_hours"):
+            hours = int(schedule.split("_")[1])
+            next_run = now + timedelta(hours=hours)
+        elif schedule.startswith("in_") and schedule.endswith("_seconds"):
+            seconds = int(schedule.split("_")[1])
+            next_run = now + timedelta(seconds=seconds)
+        elif schedule.startswith("today_at_"):
+            time_str = schedule.split("today_at_")[1]
+            hour, minute = map(int, time_str.split(":"))
+            next_run = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+            # If time already passed today, error out
+            if next_run <= now:
+                return {
+                    "status": "error",
+                    "message": f"Time {time_str} has already passed today! Current time is {now.strftime('%H:%M')}. Use 'tomorrow_at_{time_str}' or choose a later time."
+                }
+        elif schedule.startswith("tomorrow_at_"):
+            time_str = schedule.split("tomorrow_at_")[1]
+            hour, minute = map(int, time_str.split(":"))
+            next_run = (now + timedelta(days=1)).replace(hour=hour, minute=minute, second=0, microsecond=0)
+        
+        # INTERVAL-BASED schedules (every_X_...)
+        elif schedule.startswith("every_") and schedule.endswith("_minutes"):
+            minutes = int(schedule.split("_")[1])
+            next_run = now + timedelta(minutes=minutes)
+        elif schedule.startswith("every_") and schedule.endswith("_hours"):
+            hours = int(schedule.split("_")[1])
+            next_run = now + timedelta(hours=hours)
+        elif schedule.startswith("every_") and schedule.endswith("_days"):
+            days = int(schedule.split("_")[1])
+            next_run = now + timedelta(days=days)
+        elif schedule.startswith("every_") and schedule.endswith("_weeks"):
+            weeks = int(schedule.split("_")[1])
+            next_run = now + timedelta(weeks=weeks)
+        
+        # SIMPLE RECURRING schedules
+        elif schedule == "hourly":
+            next_run = now + timedelta(hours=1)
+        elif schedule == "minutely":
+            next_run = now + timedelta(minutes=1)
+        
+        # DAILY with specific time
+        elif schedule == "daily":
+            if time:
+                hour, minute = map(int, time.split(":"))
+                next_run = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+                # If time already passed today, schedule for tomorrow
+                if next_run <= now:
+                    next_run += timedelta(days=1)
+            else:
+                next_run = now + timedelta(days=1)
+        
+        # WEEKLY with specific day and time
+        elif schedule == "weekly":
+            if day_of_week:
+                # Map day names to numbers (0 = Monday, 6 = Sunday)
+                days_map = {
+                    "monday": 0, "tuesday": 1, "wednesday": 2, "thursday": 3,
+                    "friday": 4, "saturday": 5, "sunday": 6
+                }
+                target_day = days_map.get(day_of_week.lower())
+                if target_day is None:
+                    return {"status": "error", "message": f"Invalid day_of_week: {day_of_week}"}
+                
+                # Calculate days until target day
+                current_day = now.weekday()
+                days_ahead = target_day - current_day
+                if days_ahead <= 0:  # Target day already passed this week
+                    days_ahead += 7
+                
+                next_run = now + timedelta(days=days_ahead)
+                
+                # Set specific time if provided
+                if time:
+                    hour, minute = map(int, time.split(":"))
+                    next_run = next_run.replace(hour=hour, minute=minute, second=0, microsecond=0)
+                    # If we calculated today but time passed, add a week
+                    if days_ahead == 0 and next_run <= now:
+                        next_run += timedelta(weeks=1)
+            else:
+                # No specific day, just add 7 days
+                next_run = now + timedelta(weeks=1)
+        
+        # MONTHLY with specific day and time
+        elif schedule == "monthly":
+            if day_of_month:
+                # Validate day
+                if day_of_month < 1 or day_of_month > 31:
+                    return {"status": "error", "message": "day_of_month must be between 1 and 31"}
+                
+                # Start with current month
+                next_run = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+                
+                # Try to set the target day
+                while True:
+                    try:
+                        next_run = next_run.replace(day=day_of_month)
+                        break
+                    except ValueError:
+                        # Day doesn't exist in this month (e.g. Feb 30)
+                        # Move to next month
+                        if next_run.month == 12:
+                            next_run = next_run.replace(year=next_run.year + 1, month=1)
+                        else:
+                            next_run = next_run.replace(month=next_run.month + 1)
+                
+                # Set time if provided
+                if time:
+                    hour, minute = map(int, time.split(":"))
+                    next_run = next_run.replace(hour=hour, minute=minute)
+                
+                # If this month's date already passed, go to next month
+                if next_run <= now:
+                    if next_run.month == 12:
+                        next_run = next_run.replace(year=next_run.year + 1, month=1)
+                    else:
+                        next_run = next_run.replace(month=next_run.month + 1)
+                    
+                    # Re-validate day exists in new month
+                    while True:
+                        try:
+                            next_run = next_run.replace(day=day_of_month)
+                            break
+                        except ValueError:
+                            if next_run.month == 12:
+                                next_run = next_run.replace(year=next_run.year + 1, month=1)
+                            else:
+                                next_run = next_run.replace(month=next_run.month + 1)
+            else:
+                # No specific day, just add a month
+                next_run = (now.replace(day=1) + timedelta(days=32)).replace(day=1)
+        
+        # YEARLY with specific month, day, and time
+        elif schedule == "yearly":
+            if month and day_of_month:
+                # Validate month and day
+                if month < 1 or month > 12:
+                    return {"status": "error", "message": "month must be between 1 and 12"}
+                if day_of_month < 1 or day_of_month > 31:
+                    return {"status": "error", "message": "day_of_month must be between 1 and 31"}
+                
+                # Try current year first
+                try:
+                    next_run = now.replace(month=month, day=day_of_month, hour=0, minute=0, second=0, microsecond=0)
+                except ValueError:
+                    return {"status": "error", "message": f"Invalid date: month={month}, day={day_of_month}"}
+                
+                # Set time if provided
+                if time:
+                    hour, minute = map(int, time.split(":"))
+                    next_run = next_run.replace(hour=hour, minute=minute)
+                
+                # If date already passed this year, schedule for next year
+                if next_run <= now:
+                    next_run = next_run.replace(year=now.year + 1)
+            else:
+                # No specific date, just add a year
+                next_run = now.replace(year=now.year + 1)
+        
+        else:
+            # Default fallback
+            next_run = now + timedelta(days=1)
+        
+        # Create task data
+        task_data = {
+            "task_name": task_name,
+            "description": description,
+            "schedule": schedule,
+            "time": time,
+            "specific_date": specific_date,
+            "day_of_month": day_of_month,
+            "month": month,
+            "day_of_week": day_of_week,
+            "action_type": action_type,
+            "action_target": action_target or default_user_id,
+            "action_template": action_template,
+            "one_time": one_time,
+            "created_at": now.isoformat(),
+            "first_run": now.isoformat(),
+            "next_run": next_run.isoformat(),
+            "active": True
+        }
+        
+        task_json = json.dumps(task_data, indent=2)
+        task_type = "One-time" if one_time else "Recurring"
+        
+        # Format for Discord (human-readable + JSON)
+        action_desc = ""
+        if action_type == "user_reminder":
+            action_desc = f"Discord DM → User {action_target or default_user_id}"
+        elif action_type == "channel_post":
+            action_desc = f"Discord Channel → {action_target}"
+        
+        # Build schedule description
+        schedule_desc = schedule
+        if specific_date:
+            schedule_desc = f"on {specific_date}"
+        if day_of_week:
+            schedule_desc += f" ({day_of_week}s)"
+        if day_of_month and not specific_date:
+            schedule_desc += f" (day {day_of_month})"
+        if month and not specific_date:
+            months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            schedule_desc += f" ({months[month]})"
+        if time:
+            schedule_desc += f" at {time}"
+        
+        formatted_message = f"""📋 **Task: {task_name}**
 ├─ Description: {description}
-├─ Schedule: {schedule} at {time or 'default time'}
-└─ Action: {action_type} → {action_target or default_user_id}
+├─ Schedule: {schedule_desc} ({task_type})
+├─ Next Run: {next_run.strftime('%Y-%m-%d %H:%M')}
+└─ Action: {action_desc}
 
 ```json
-{json.dumps(task_data, indent=2)}
+{task_json}
 ```"""
-    
-    response = requests.post(message_url, json={"content": formatted_message}, headers=headers, timeout=10)
-    
-    if response.status_code in (200, 201):
+        
+        # Post task to Discord channel
+        headers = {
+            "Authorization": f"Bot {bot_token}",
+            "Content-Type": "application/json"
+        }
+        
+        message_url = f"https://discord.com/api/v10/channels/{tasks_channel_id}/messages"
+        response = requests.post(
+            message_url,
+            json={"content": formatted_message},
+            headers=headers,
+            timeout=10
+        )
+        
+        if response.status_code not in (200, 201):
+            return {"status": "error", "message": f"Failed to store task: {response.text}"}
+        
+        message_id = response.json()["id"]
+        
         return {
             "status": "success",
-            "message": f"Task '{task_name}' created!",
+            "message": f"{task_type} task '{task_name}' created and stored!",
             "task_data": task_data,
-            "message_id": response.json()["id"]
+            "message_id": message_id,
+            "next_run": next_run.strftime('%Y-%m-%d %H:%M:%S'),
+            "schedule_description": schedule_desc
         }
-    else:
-        return {"status": "error", "message": f"Failed to create task: {response.text}"}
+    
+    except ValueError as ve:
+        # Handle invalid date/time values
+        return {"status": "error", "message": f"Invalid date/time value: {str(ve)}"}
+    except Exception as e:
+        # Catch-all for other errors
+        return {"status": "error", "message": f"Error: {str(e)}"}
 
 def _delete_task(bot_token, message_id, channel_id):
     """Delete a scheduled task."""
