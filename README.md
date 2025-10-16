@@ -52,7 +52,7 @@
 
 ### Official Examples
 
-- [Lett Chatbot template](https://github.com/letta-ai/letta-chatbot-example) - An example Next.js chatbot application built on the Letta API, which makes each chatbot a stateful agent (agent with memory) under the hood.
+- [Letta Chatbot template](https://github.com/letta-ai/letta-chatbot-example) - An example Next.js chatbot application built on the Letta API, which makes each chatbot a stateful agent (agent with memory) under the hood.
 - [Letta Examples Repository](https://github.com/letta-ai/letta/tree/main/examples) - Official example implementations
 - [Vercel AI SDK Provider Examples](https://github.com/letta-ai/vercel-ai-sdk-provider/tree/main/examples) - AI SDK integration examples
 - [Discord bot](https://github.com/letta-ai/letta-discord-bot-example) An example Discord chatbot built on the Letta API, which uses a stateful agent (agent with memory) under the hood.
@@ -60,7 +60,6 @@
 
 ### Use Case Examples
 <!-- Categories for different types of applications -->
-
 - [Deep research agent](https://github.com/letta-ai/deep-research)
 - [DuckDB agent](https://github.com/letta-ai/letta-duckdb-agent)
 
@@ -162,6 +161,7 @@ In this section, you should add pre-configured agent templates for common use ca
 
 ### Showcase
 - [Community Showcase](https://discord.gg/letta-ai) - #showcase channel in Discord
+- [Interact with your Letta agent using n8n and Telegram](https://github.com/raisga/telegram-letta-n8n-guide) - Guide to connect Letta agents with n8n and Telegram
 - Submit your projects here via PR!
 
 ## Contributing
