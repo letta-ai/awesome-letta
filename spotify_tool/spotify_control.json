@@ -1,0 +1,122 @@
+{
+  "name": "spotify_control",
+  "description": "🚨 MANDATORY BATCH MODE: You MUST use execute_batch for ALL operations! Single-action calls (play, pause, search, etc.) are DEPRECATED and waste API credits. Control Spotify playback and manage playlists. Can search for music, play tracks/albums/playlists directly by name (no need for separate search!), control playback (pause, next, previous), get currently playing track, create playlists, CREATE AND POPULATE PLAYLISTS IN ONE CALL, add multiple tracks to playlists or queue in ONE CALL using song names! 💰 CRITICAL: You MUST use execute_batch for ANY combination of operations (even 2 operations = use batch!). Single-action calls are FORBIDDEN unless you have exactly ONE operation that cannot be batched.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": [
+          "search",
+          "play",
+          "pause",
+          "next",
+          "previous",
+          "now_playing",
+          "create_playlist",
+          "add_to_playlist",
+          "add_to_queue",
+          "my_playlists",
+          "execute_batch"
+        ],
+        "description": "🚨 MANDATORY: Use execute_batch for ALL operations (even single operations can use batch mode!). SINGLE ACTIONS ARE DEPRECATED - only use if you have EXACTLY ONE operation that cannot be combined:\n- execute_batch: PRIMARY ACTION - Execute MULTIPLE actions in ONE API call! Use 'operations' parameter. Example: [{'action': 'create_playlist', 'playlist_name': 'Mix', 'songs': 'song1; song2'}, {'action': 'play', 'query': 'Mix', 'content_type': 'playlist'}]\n- search: Search for tracks/artists/albums/playlists (DEPRECATED - use in execute_batch!)\n- play: Play music by spotify_id OR query (DEPRECATED - use in execute_batch!)\n- pause/next/previous: Control playback (DEPRECATED - use in execute_batch!)\n- now_playing: Get current track (DEPRECATED - use in execute_batch!)\n- create_playlist: Create playlist WITH songs (DEPRECATED - use in execute_batch!)\n- add_to_playlist: Add tracks to playlist (DEPRECATED - use in execute_batch!)\n- add_to_queue: Add tracks to queue (DEPRECATED - use in execute_batch!)\n- my_playlists: List playlists (DEPRECATED - use in execute_batch!)\n\nCRITICAL: If you need to do 2+ operations, you MUST use execute_batch! Single-action calls waste API credits."
+      },
+      "query": {
+        "type": "string",
+        "description": "Search query - works with 'search', 'play', 'add_to_playlist', and 'add_to_queue' actions.\n\nFor SINGLE track: Just provide the song/artist name. Example: 'bohemian rhapsody queen'\n\nFor MULTIPLE tracks (add_to_playlist/add_to_queue): Separate each song with SEMICOLONS.\nExample: 'bohemian rhapsody queen; stairway to heaven led zeppelin; hotel california eagles'\n\nThe tool will automatically search for each song and add all of them in ONE call!"
+      },
+      "spotify_id": {
+        "type": "string",
+        "description": "Spotify ID of content. OPTIONAL if 'query' is provided for 'play' or 'add_to_queue' actions. Required as playlist_id for 'add_to_playlist' action. Get IDs from search results if needed."
+      },
+      "content_type": {
+        "type": "string",
+        "enum": [
+          "track",
+          "artist",
+          "album",
+          "playlist"
+        ],
+        "description": "Type of content for search or play actions. Defaults to 'track'. Use 'album' to play full albums, 'artist' for artist radio, 'playlist' for playlists."
+      },
+      "playlist_name": {
+        "type": "string",
+        "description": "Name for new playlist (required for 'create_playlist' action). Example: 'Road Trip Mix', 'Workout Bangers', 'Chill Vibes'"
+      },
+      "playlist_description": {
+        "type": "string",
+        "description": "Description for new playlist (optional for 'create_playlist' action). Example: 'Perfect songs for long drives'"
+      },
+      "track_ids": {
+        "type": "string",
+        "description": "Comma-separated list of Spotify track IDs to add to playlist (for 'add_to_playlist' action if NOT using query). Example: '3n3Ppam7vgaVa1iaRUc9Lp,7ouMYWpwJ422jRcDASZB7P'. OPTIONAL if 'query' is provided instead."
+      },
+      "songs": {
+        "type": "string",
+        "description": "Semicolon-separated list of song names/queries (OPTIONAL for 'create_playlist' action - if not provided, creates empty playlist).\n\nYou can add AS MANY SONGS AS YOU WANT - no limit! Just separate them with semicolons.\n\nExamples:\n- '3 songs': 'bohemian rhapsody queen; stairway to heaven; hotel california'\n- '10+ songs': 'song1; song2; song3; song4; song5; song6; song7; song8; song9; song10; song11; ...'\n\nThe tool will automatically:\n1. Create the playlist\n2. Search for EACH song\n3. Add ALL found tracks\n4. Report which songs were added and which failed\n\nAll in ONE action!"
+      },
+      "limit": {
+        "type": "integer",
+        "description": "Maximum number of results for search or list actions (1-50). Defaults to 10 for search, 20 for playlists."
+      },
+      "operations": {
+        "type": "array",
+        "description": "List of operations to execute in batch (REQUIRED for 'execute_batch' action, ignored for all others).\n\nEach operation is a dictionary with:\n- 'action': The action to perform (any spotify_control action EXCEPT execute_batch)\n- All other parameters needed for that action\n\nMAXIMUM 10 operations per batch call.\n\nExamples:\n\n1. Create playlist and play it:\n[\n  {\"action\": \"create_playlist\", \"playlist_name\": \"Saturday Night\", \"songs\": \"bohemian rhapsody; stairway to heaven\"},\n  {\"action\": \"play\", \"query\": \"Saturday Night\", \"content_type\": \"playlist\"}\n]\n\n2. Skip song and add to queue:\n[\n  {\"action\": \"next\"},\n  {\"action\": \"add_to_queue\", \"query\": \"hotel california\"}\n]\n\n3. Pause and create multiple playlists:\n[\n  {\"action\": \"pause\"},\n  {\"action\": \"create_playlist\", \"playlist_name\": \"Rock\", \"songs\": \"song1; song2\"},\n  {\"action\": \"create_playlist\", \"playlist_name\": \"Jazz\", \"songs\": \"song3; song4\"}\n]",
+        "items": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "description": "The action to perform in this operation"
+            },
+            "query": {
+              "type": "string",
+              "description": "Search query for this operation"
+            },
+            "spotify_id": {
+              "type": "string",
+              "description": "Spotify ID for this operation"
+            },
+            "content_type": {
+              "type": "string",
+              "enum": [
+                "track",
+                "artist",
+                "album",
+                "playlist"
+              ],
+              "description": "Content type for this operation"
+            },
+            "playlist_name": {
+              "type": "string",
+              "description": "Playlist name for this operation"
+            },
+            "playlist_description": {
+              "type": "string",
+              "description": "Playlist description for this operation"
+            },
+            "track_ids": {
+              "type": "string",
+              "description": "Comma-separated track IDs for this operation"
+            },
+            "songs": {
+              "type": "string",
+              "description": "Semicolon-separated song queries for this operation"
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Limit for this operation"
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "additionalProperties": true
+        }
+      }
+    },
+    "required": [
+      "action"
+    ]
+  }
+}

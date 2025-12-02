@@ -1,0 +1,478 @@
+{
+  "name": "discord_tool",
+  "description": "🚨 MANDATORY BATCH MODE: You MUST use execute_batch or manage_tasks for ALL operations! Single-action calls (send_message, read_messages, create_task, etc.) are DEPRECATED and waste API credits. Unified Discord integration tool for PROACTIVE operations and automation. Use this for: sending proactive messages during heartbeats or scheduled tasks, reading Discord channels/DMs for context, listing guilds/servers, listing channels, and managing scheduled tasks. IMPORTANT: For responding to the user in conversation, ALWAYS use the standard send_message tool instead. This tool is ONLY for proactive/scheduled Discord operations. 💰 CRITICAL: You MUST use execute_batch for ANY combination of operations (even 2 operations = use batch!). For task operations, use manage_tasks. Single-action calls are FORBIDDEN unless you have exactly ONE operation that cannot be batched.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": [
+          "send_message",
+          "read_messages",
+          "list_guilds",
+          "list_channels",
+          "create_task",
+          "delete_task",
+          "list_tasks",
+          "manage_tasks",
+          "execute_batch"
+        ],
+        "description": "🚨 MANDATORY: Use execute_batch for ALL operations (even single operations can use batch mode!). Use manage_tasks for task operations (list/delete/create together). SINGLE ACTIONS ARE DEPRECATED - only use if you have EXACTLY ONE operation that cannot be combined with anything else: send_message (PROACTIVE only - NOT conversation!), read_messages, list_guilds, create_task, delete_task, list_tasks. CRITICAL: If you need to do 2+ operations, you MUST use execute_batch! Single-action calls waste API credits. Use standard send_message tool for conversation responses, NOT this tool!"
+      },
+      "message": {
+        "type": "string",
+        "description": "PROACTIVE message content to send during heartbeats or scheduled tasks (required for send_message action). Auto-chunks messages over 2000 characters. WARNING: Do NOT use this for conversation responses - use standard send_message tool instead!"
+      },
+      "target": {
+        "type": "string",
+        "description": "Target ID - user ID for DMs, channel ID for channels (required for send_message and read_messages actions)"
+      },
+      "target_type": {
+        "type": "string",
+        "enum": [
+          "user",
+          "channel"
+        ],
+        "description": "Type of target - 'user' for DMs, 'channel' for channel messages (optional, auto-detected if not specified)"
+      },
+      "mention_users": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "List of user IDs to mention/ping in the message (e.g. ['701608830852792391']). Only works in channels, not DMs. Formats as <@ID> in Discord. Mutually exclusive with ping_everyone and ping_here. (optional for send_message action)"
+      },
+      "ping_everyone": {
+        "type": "boolean",
+        "default": false,
+        "description": "Ping @everyone in the channel (channel only, requires permissions). Mutually exclusive with ping_here and mention_users. (optional for send_message action)"
+      },
+      "ping_here": {
+        "type": "boolean",
+        "default": false,
+        "description": "Ping @here (online users) in the channel (channel only, requires permissions). Mutually exclusive with ping_everyone and mention_users. (optional for send_message action)"
+      },
+      "limit": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100,
+        "default": 50,
+        "description": "Maximum number of messages to retrieve when NO time filter is used. When time_filter or start_time/end_time are provided, smart pagination automatically fetches ALL messages in that time range (up to 5000) and returns only matching messages (for read_messages action)"
+      },
+      "time_filter": {
+        "type": "string",
+        "enum": [
+          "all",
+          "today",
+          "yesterday",
+          "last_1_hours",
+          "last_2_hours",
+          "last_6_hours",
+          "last_12_hours",
+          "last_24_hours",
+          "last_2_days",
+          "last_7_days",
+          "last_monday",
+          "last_tuesday",
+          "last_wednesday",
+          "last_thursday",
+          "last_friday",
+          "last_saturday",
+          "last_sunday"
+        ],
+        "default": "all",
+        "description": "Time filter for reading messages: 'all', 'today', 'yesterday', 'last_X_hours/days', or 'last_monday/tuesday/etc' for specific weekdays. Weekday filters can be COMBINED with start_time/end_time for precise ranges (e.g., time_filter='last_thursday' + start_time='10:00' + end_time='12:00' = last Thursday 10-12h) (for read_messages action)"
+      },
+      "timezone": {
+        "type": "string",
+        "default": "Europe/Berlin",
+        "description": "Timezone for message timestamps (IANA timezone string, e.g. 'Europe/Berlin', 'America/New_York')"
+      },
+      "show_both": {
+        "type": "boolean",
+        "default": true,
+        "description": "Show both UTC and local timestamps (for read_messages action)"
+      },
+      "search_keywords": {
+        "type": "string",
+        "description": "Keywords to search for in message content (case-insensitive, space or comma separated, searches for ANY keyword match). IMPORTANT: Results are limited to 10 messages (newest first) to prevent overload. BEST PRACTICE: Always combine with time filters (time_filter, start_time, end_time) for precise results. Example: search_keywords='bug' + time_filter='last_3_days' instead of just search_keywords='bug' (optional for read_messages action)"
+      },
+      "start_time": {
+        "type": "string",
+        "description": "Custom start time for filtering messages. Supports formats: '12:00' (time today or relative to time_filter), '14:30', 'yesterday 14:30', 'today 09:00', '2024-11-07 10:00' (ISO). Can be COMBINED with time_filter for weekdays: time_filter='last_thursday' + start_time='10:00' applies 10:00 to last Thursday. Examples: start_time='12:00' end_time='13:00' for today 12-13h; time_filter='last_monday' + start_time='14:00' end_time='18:00' for last Monday afternoon (optional for read_messages action)"
+      },
+      "end_time": {
+        "type": "string",
+        "description": "Custom end time for filtering messages. Same formats as start_time: '12:00', 'yesterday 14:30', '2024-11-07 10:00', etc. When combined with time_filter (e.g., 'last_thursday'), the time is applied to that day. If only start_time is provided, filters from start_time to now. Use together with start_time for specific time ranges (optional for read_messages action)"
+      },
+      "message_id": {
+        "type": "string",
+        "description": "Discord message ID (required for delete_task action)"
+      },
+      "channel_id": {
+        "type": "string",
+        "description": "Discord channel ID (required for delete_task action)"
+      },
+      "server_id": {
+        "type": "string",
+        "description": "Discord server/guild ID (required for list_channels action)"
+      },
+      "include_channels": {
+        "type": "boolean",
+        "default": true,
+        "description": "Include channels for each guild (optional for list_guilds action - when true, fetches all channels for each guild in a single call). DEFAULT: true - shows servers WITH their channels to save API calls"
+      },
+      "task_name": {
+        "type": "string",
+        "description": "Name for the scheduled task (required for create_task action)"
+      },
+      "description": {
+        "type": "string",
+        "description": "Description of the scheduled task (required for create_task action)"
+      },
+      "schedule": {
+        "type": "string",
+        "description": "Schedule for the task. Formats: 'daily', 'weekly', 'monthly', 'yearly', 'hourly', 'minutely' (recurring), 'in_X_minutes', 'in_X_hours', 'in_X_seconds' (one-time), 'every_X_minutes', 'every_X_hours', 'every_X_days', 'every_X_weeks' (recurring), 'today_at_HH:MM', 'tomorrow_at_HH:MM', 'on_date' (with specific_date). Examples: 'weekly', 'in_10_hours', 'every_6_hours', 'daily', 'on_date' (required for create_task action)"
+      },
+      "time": {
+        "type": "string",
+        "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$",
+        "description": "Time in HH:MM format (24-hour) for scheduled tasks. Use with daily, weekly, monthly, yearly schedules. (optional for create_task action)"
+      },
+      "specific_date": {
+        "type": "string",
+        "description": "Specific date for one-time tasks. Use with schedule='on_date'. Formats: 'YYYY-MM-DD' or 'DD.MM.YYYY'. Example: '2025-12-25' or '25.12.2025'. (optional for create_task action)"
+      },
+      "day_of_month": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 31,
+        "description": "Day of month (1-31) for monthly or yearly tasks. Use with schedule='monthly' or 'yearly'. Example: 15 for the 15th of each month. (optional for create_task action)"
+      },
+      "month": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 12,
+        "description": "Month (1-12) for yearly tasks. Use with schedule='yearly' and day_of_month. Example: 12 for December. (optional for create_task action)"
+      },
+      "day_of_week": {
+        "type": "string",
+        "enum": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ],
+        "description": "Day of week for weekly tasks. Use with schedule='weekly'. Example: 'saturday' for every Saturday. (optional for create_task action)"
+      },
+      "action_type": {
+        "type": "string",
+        "enum": [
+          "user_reminder",
+          "channel_post",
+          "self_task"
+        ],
+        "description": "Type of action when task runs: 'user_reminder' (send DM to user), 'channel_post' (post to channel), or 'self_task' (internal agent task - logs to Heartbeat Log Channel) (required for create_task action)"
+      },
+      "action_target": {
+        "type": "string",
+        "description": "Target for task action: user ID for reminders, channel ID for posts/self_tasks. SMART DEFAULTS when not specified: 'user_reminder' → User's DMs, 'self_task'/'channel_post' → Heartbeat Log Channel (optional for create_task action)"
+      },
+      "action_template": {
+        "type": "string",
+        "description": "Message template to send when task runs (required for create_task action)"
+      },
+      "tasks_channel_id": {
+        "type": "string",
+        "description": "Channel ID where tasks are stored (optional for list_tasks action, uses default if not specified). 💰 TIP: Use manage_tasks with list_tasks=true instead to enable batch operations (list + delete + create in ONE call)!"
+      },
+      "list_tasks": {
+        "type": "boolean",
+        "default": false,
+        "description": "💰 List all scheduled tasks in the tasks channel (for manage_tasks action). TIP: Combine with delete_task_ids or create_tasks in ONE call to save credits! Example: list_tasks=true + delete_task_ids=['123'] = list & delete in one API call."
+      },
+      "delete_task_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Array of Discord message IDs of tasks to delete. Example: ['1234567890', '0987654321']. Each ID that fails to delete will be reported in the error list (optional for manage_tasks action)"
+      },
+      "create_tasks": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "task_name": {
+              "type": "string",
+              "description": "Name for the scheduled task"
+            },
+            "description": {
+              "type": "string",
+              "description": "Description of the scheduled task"
+            },
+            "schedule": {
+              "type": "string",
+              "description": "Schedule format (e.g., 'daily', 'weekly', 'in_10_hours', 'every_6_hours', 'on_date')"
+            },
+            "time": {
+              "type": "string",
+              "description": "Time in HH:MM format (optional)"
+            },
+            "specific_date": {
+              "type": "string",
+              "description": "Specific date for one-time tasks (optional)"
+            },
+            "day_of_month": {
+              "type": "integer",
+              "description": "Day of month for monthly/yearly tasks (optional)"
+            },
+            "month": {
+              "type": "integer",
+              "description": "Month for yearly tasks (optional)"
+            },
+            "day_of_week": {
+              "type": "string",
+              "description": "Day of week for weekly tasks (optional)"
+            },
+            "action_type": {
+              "type": "string",
+              "description": "Action type: 'user_reminder' (DM to user), 'channel_post' (post to channel), or 'self_task' (internal agent task - logs to Heartbeat Log Channel)"
+            },
+            "action_target": {
+              "type": "string",
+              "description": "Target user or channel ID. SMART DEFAULTS when not specified: 'user_reminder' → User's DMs, 'self_task'/'channel_post' → Heartbeat Log Channel (optional)"
+            },
+            "action_template": {
+              "type": "string",
+              "description": "Message template for the task"
+            }
+          },
+          "required": [
+            "task_name",
+            "schedule"
+          ]
+        },
+        "description": "Array of task specifications to create. Each task must have task_name and schedule. Example: [{'task_name': 'Daily Check-in', 'schedule': 'daily', 'time': '09:00', 'action_type': 'user_reminder', 'action_template': 'Good morning!'}]. Failed creations will be reported individually (optional for manage_tasks action)"
+      },
+      "operations": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "description": "The action to perform for this operation"
+            },
+            "message": {
+              "type": "string",
+              "description": "Message content for send_message action"
+            },
+            "target": {
+              "type": "string",
+              "description": "Target ID for send_message or read_messages"
+            },
+            "target_type": {
+              "type": "string",
+              "enum": [
+                "user",
+                "channel"
+              ],
+              "description": "Type of target"
+            },
+            "mention_users": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of user IDs to mention"
+            },
+            "ping_everyone": {
+              "type": "boolean",
+              "description": "Ping @everyone"
+            },
+            "ping_here": {
+              "type": "boolean",
+              "description": "Ping @here"
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Limit for read_messages"
+            },
+            "time_filter": {
+              "type": "string",
+              "description": "Time filter for read_messages"
+            },
+            "timezone": {
+              "type": "string",
+              "description": "Timezone for timestamps"
+            },
+            "show_both": {
+              "type": "boolean",
+              "description": "Show both UTC and local timestamps"
+            },
+            "search_keywords": {
+              "type": "string",
+              "description": "Keywords to search for"
+            },
+            "start_time": {
+              "type": "string",
+              "description": "Start time for filtering"
+            },
+            "end_time": {
+              "type": "string",
+              "description": "End time for filtering"
+            },
+            "message_id": {
+              "type": "string",
+              "description": "Message ID for delete_task"
+            },
+            "channel_id": {
+              "type": "string",
+              "description": "Channel ID for delete_task"
+            },
+            "server_id": {
+              "type": "string",
+              "description": "Server ID for list_channels"
+            },
+            "include_channels": {
+              "type": "boolean",
+              "description": "Include channels for list_guilds"
+            },
+            "task_name": {
+              "type": "string",
+              "description": "Task name for create_task"
+            },
+            "description": {
+              "type": "string",
+              "description": "Task description"
+            },
+            "schedule": {
+              "type": "string",
+              "description": "Task schedule"
+            },
+            "time": {
+              "type": "string",
+              "description": "Time in HH:MM format"
+            },
+            "specific_date": {
+              "type": "string",
+              "description": "Specific date for one-time tasks"
+            },
+            "day_of_month": {
+              "type": "integer",
+              "description": "Day of month"
+            },
+            "month": {
+              "type": "integer",
+              "description": "Month (1-12)"
+            },
+            "day_of_week": {
+              "type": "string",
+              "enum": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ],
+              "description": "Day of week"
+            },
+            "action_type": {
+              "type": "string",
+              "enum": [
+                "user_reminder",
+                "channel_post",
+                "self_task"
+              ],
+              "description": "Action type for tasks"
+            },
+            "action_target": {
+              "type": "string",
+              "description": "Target for task action"
+            },
+            "action_template": {
+              "type": "string",
+              "description": "Message template for tasks"
+            },
+            "tasks_channel_id": {
+              "type": "string",
+              "description": "Tasks channel ID"
+            },
+            "list_tasks": {
+              "type": "boolean",
+              "description": "List tasks for manage_tasks"
+            },
+            "delete_task_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Task IDs to delete"
+            },
+            "create_tasks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "task_name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "schedule": {
+                    "type": "string"
+                  },
+                  "time": {
+                    "type": "string"
+                  },
+                  "specific_date": {
+                    "type": "string"
+                  },
+                  "day_of_month": {
+                    "type": "integer"
+                  },
+                  "month": {
+                    "type": "integer"
+                  },
+                  "day_of_week": {
+                    "type": "string"
+                  },
+                  "action_type": {
+                    "type": "string"
+                  },
+                  "action_target": {
+                    "type": "string"
+                  },
+                  "action_template": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "task_name",
+                  "schedule"
+                ]
+              },
+              "description": "Tasks to create"
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "additionalProperties": true
+        },
+        "description": "💰 Array of operations to execute in ONE API call (for execute_batch action). MASSIVE credit savings! ALWAYS USE THIS instead of multiple separate calls! Even for a single operation, batch mode is fine. Each operation is a dictionary with ALL parameters for that specific action. Example: [{'action': 'read_messages', 'target': '123', 'time_filter': 'today'}, {'action': 'list_guilds'}, {'action': 'manage_tasks', 'list_tasks': true, 'delete_task_ids': ['456']}]. Operations execute independently - if one fails, others continue. Returns detailed results for each operation. CANNOT nest execute_batch inside execute_batch. Use this as your DEFAULT approach! (required for execute_batch action)"
+      }
+    },
+    "required": [
+      "action"
+    ],
+    "additionalProperties": false
+  }
+}
