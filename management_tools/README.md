@@ -115,6 +115,47 @@ python manage-agent-tools.py detach old_tool
 
 ---
 
+### 7. `letta_memory_merger.py` - Merge and upload archival memories
+
+Merge archival memories from multiple Letta agents and upload to target agent(s).
+
+**Features:**
+- Download memories from multiple source agents
+- Automatic deduplication (based on content hash)
+- Upload to one or multiple target agents
+- Live progress display
+- Batch processing with rate limiting
+
+```bash
+# Using environment variables
+export LETTA_API_KEY="sk-let-..."
+python letta_memory_merger.py --source agent-123 --target agent-456
+
+# Using command line arguments
+python letta_memory_merger.py --api-key sk-let-... --source agent-123 --target agent-456
+
+# Multiple source and target agents
+python letta_memory_merger.py --source agent-123 agent-456 --target agent-789
+
+# Custom batch settings
+python letta_memory_merger.py --source agent-123 --target agent-456 --batch-size 100 --batch-delay 1.0
+```
+
+**Options:**
+- `--api-key`: Letta API key (or set `LETTA_API_KEY` environment variable)
+- `--source`: Source agent ID(s) to download memories from (can specify multiple)
+- `--target`: Target agent ID(s) to upload merged memories to (can specify multiple)
+- `--batch-size`: Batch size for uploads (default: 50)
+- `--batch-delay`: Delay between batches in seconds (default: 0.5)
+
+**Notes:**
+- Automatically deduplicates memories based on content hash
+- Shows live progress during download and upload
+- Handles rate limiting with configurable delays
+- Supports multiple endpoint formats for compatibility
+
+---
+
 ## 🚀 Common Workflows
 
 ### Pull all current tools from Letta
@@ -168,6 +209,11 @@ LETTA_BASE_URL=https://api.letta.com
 **For advanced tools:**
 ```bash
 pip install python-dotenv requests
+```
+
+**For memory merger:**
+```bash
+pip install requests urllib3
 ```
 
 ---
@@ -242,5 +288,5 @@ python manage-agent-tools.py attach tool_name
 ---
 
 **Created by:** Mioré 🐾  
-**Last Updated:** 2025-10-14
+**Last Updated:** 2025-01-15
 

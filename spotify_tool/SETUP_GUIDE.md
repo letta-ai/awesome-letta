@@ -86,35 +86,17 @@ http://127.0.0.1:8888/callback?code=BQBfKFZOTWKHXO0aoXR5B4yGnNv...
 
 ## 🔧 Configuration
 
-### For Letta Cloud
+### Environment Variables (Recommended)
 
-You need to hardcode the credentials in the tool source code:
+The tool uses environment variables for credentials. Set these before using the tool:
 
-1. Open `spotify_control.py`
-2. Find this section (around line 20):
+**For Letta Cloud:**
+Set environment variables in your Letta agent configuration:
+- `SPOTIFY_CLIENT_ID` - Your Spotify Client ID
+- `SPOTIFY_CLIENT_SECRET` - Your Spotify Client Secret
+- `SPOTIFY_REFRESH_TOKEN` - Your Spotify Refresh Token
 
-```python
-SPOTIFY_CLIENT_ID = "YOUR_CLIENT_ID_HERE"
-SPOTIFY_CLIENT_SECRET = "YOUR_CLIENT_SECRET_HERE"
-SPOTIFY_REFRESH_TOKEN = "YOUR_REFRESH_TOKEN_HERE"
-```
-
-3. Replace with your values:
-
-```python
-SPOTIFY_CLIENT_ID = "your_actual_client_id_here"
-SPOTIFY_CLIENT_SECRET = "your_actual_client_secret_here"
-SPOTIFY_REFRESH_TOKEN = "your_actual_refresh_token_here"
-```
-
-**⚠️ IMPORTANT:** 
-- **Never commit this file with real credentials to a public repo!**
-- Add `spotify_control.py` to `.gitignore` if sharing publicly
-- Or use a separate `spotify_credentials.py` file (also in `.gitignore`)
-
----
-
-### For Local Testing
+**For Local Testing:**
 
 Create a `.env` file in the `spotify_tool/` directory:
 
@@ -124,12 +106,25 @@ SPOTIFY_CLIENT_SECRET=your_client_secret_here
 SPOTIFY_REFRESH_TOKEN=your_refresh_token_here
 ```
 
+Or export them in your shell:
+
+```bash
+export SPOTIFY_CLIENT_ID="your_client_id_here"
+export SPOTIFY_CLIENT_SECRET="your_client_secret_here"
+export SPOTIFY_REFRESH_TOKEN="your_refresh_token_here"
+```
+
 Then test:
 
 ```bash
 cd spotify_tool
 python3 spotify_control.py
 ```
+
+**⚠️ IMPORTANT:** 
+- **Never commit credentials to a public repo!**
+- Add `.env` to `.gitignore` if sharing publicly
+- Use environment variables instead of hardcoding credentials
 
 ---
 
@@ -163,11 +158,19 @@ Ask your agent:
 "Play some lofi hip hop"
 ```
 
-### Test 4: Create Playlist
+### Test 4: Create Playlist with Songs
 
 ```
-"Create a playlist called 'AI Generated Vibes'"
+"Create a playlist called 'AI Generated Vibes' with songs: bohemian rhapsody; stairway to heaven; hotel california"
 ```
+
+### Test 5: Batch Operations
+
+```
+"Create a playlist called 'Saturday Night' with songs: song1; song2, then play it"
+```
+
+The tool will automatically use `execute_batch` to combine these operations!
 
 ---
 
@@ -176,14 +179,18 @@ Ask your agent:
 | Action | Description | Example |
 |--------|-------------|---------|
 | `search` | Search tracks/artists/albums/playlists | "Search for Queen" |
-| `play` | Play specific content | "Play Bohemian Rhapsody" |
+| `play` | Play specific content by ID or query | "Play Bohemian Rhapsody" (searches automatically!) |
 | `pause` | Pause playback | "Pause the music" |
 | `next` | Skip to next track | "Next song" |
 | `previous` | Previous track | "Previous song" |
 | `now_playing` | Get current track | "What's playing?" |
-| `create_playlist` | Create new playlist | "Make a playlist" |
-| `add_to_playlist` | Add tracks | "Add this to my playlist" |
+| `create_playlist` | Create new playlist (with optional songs!) | "Make a playlist with songs: song1; song2" |
+| `add_to_playlist` | Add tracks by ID or query | "Add these songs to playlist: song1; song2" |
+| `add_to_queue` | Add tracks to queue by ID or query | "Add to queue: song1; song2" |
 | `my_playlists` | List playlists | "Show my playlists" |
+| `execute_batch` | Execute multiple operations in ONE call | See examples below |
+
+**💰 BATCH MODE:** Use `execute_batch` to combine multiple operations and save API credits!
 
 ---
 

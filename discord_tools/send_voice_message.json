@@ -1,0 +1,59 @@
+{
+  "name": "send_voice_message",
+  "description": "Send a voice message to Discord using ElevenLabs Text-to-Speech. Converts text to speech and sends it as an audio file. IMPORTANT: Audio Tags in square brackets [ ] are NOT spoken - they control HOW the text is spoken! Example: [excited] Hey! will be spoken excitedly WITHOUT saying '[excited]'. Available Audio Tags: EMOTIONS: [excited] (excited), [whispering] (whisper), [laughs] (laugh), [giggles] (giggle), [sighs] (sigh), [sarcastic] (sarcastic), [angry] (angry), [happy] (happy), [sad] (sad), [disgusted] (disgusted), [fearful] (fearful), [surprised] (surprised), [neutral] (neutral), [nervous] (nervous), [calm] (calm), [frustrated] (frustrated), [curious] (curious), [crying] (crying), [mischievously] (mischievous), [shouts] (shout), [clears throat] (clear throat), [breathing] (breathing), [inhales] (inhale), [exhales] (exhale). ACCENTS: [strong French accent], [strong German accent], [strong Spanish accent], [strong Italian accent], [strong British accent], [strong American accent], [strong Russian accent], [strong Japanese accent]. Use this for personal messages, emotional moments, or when you want to show personality. See ELEVENLABS_AUDIO_TAGS_GUIDE.md for complete documentation.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "description": "The text to convert to speech. IMPORTANT: Audio Tags in square brackets [ ] are NOT spoken - they control the emotion! Example: [excited] Hey! will be spoken excitedly WITHOUT saying '[excited]'. Available Audio Tags: EMOTIONS: [excited] (excited/enthusiastic), [whispering] (whisper for secrets), [laughs] (laugh), [giggles] (giggle), [sighs] (sigh), [sarcastic] (sarcastic tone), [angry] (angry tone), [happy] (happy tone), [sad] (sad tone), [disgusted] (disgusted tone), [fearful] (fearful tone), [surprised] (surprised tone), [neutral] (neutral tone), [nervous] (nervous tone), [calm] (calm tone), [frustrated] (frustrated/annoyed tone), [curious] (curious tone), [crying] (crying tone), [mischievously] (mischievous tone), [shouts] (shout), [clears throat] (clear throat), [breathing] (breathing sounds), [inhales] (inhale), [exhales] (exhale). ACCENTS: [strong French accent], [strong German accent], [strong Spanish accent], [strong Italian accent], [strong British accent], [strong American accent], [strong Russian accent], [strong Japanese accent]. Maximum 3000 characters. See ELEVENLABS_AUDIO_TAGS_GUIDE.md for complete documentation."
+      },
+      "target": {
+        "type": "string",
+        "description": "Discord User ID (for DM) or Channel ID (for channel message)"
+      },
+      "target_type": {
+        "type": "string",
+        "enum": [
+          "user",
+          "channel",
+          "auto"
+        ],
+        "description": "Specify 'user' for DM, 'channel' for channel message, or 'auto' for automatic detection (default: auto)"
+      },
+      "voice_id": {
+        "type": "string",
+        "description": "Optional: ElevenLabs Voice ID (default: configured voice from ELEVENLABS_VOICE_ID environment variable)"
+      },
+      "model_id": {
+        "type": "string",
+        "description": "Optional: Model ID. Default: 'eleven_multilingual_v2' or configured model. Use 'eleven_turbo_v2_5' for faster generation, 'eleven_multilingual_v2' for multilingual support, or 'eleven_v3' for Audio Tags support. See ElevenLabs Docs for available models."
+      },
+      "stability": {
+        "type": "number",
+        "description": "Voice stability (for v3: 0.0=Creative, 0.5=Natural, 1.0=Robust, default: 0.5). Lower = more emotional/variable, Higher = more stable/monotone"
+      },
+      "similarity_boost": {
+        "type": "number",
+        "description": "Similarity boost (0.0-1.0, default: 0.75). How close to the original voice it should be"
+      },
+      "style": {
+        "type": "number",
+        "description": "Style exaggeration (0.0-1.0, default: 0.0). Enhances the style of the original speaker. May reduce stability."
+      },
+      "use_speaker_boost": {
+        "type": "boolean",
+        "description": "Enable Speaker Boost for better similarity (default: False). Slightly increases latency."
+      },
+      "reply_to_message_id": {
+        "type": "string",
+        "description": "Optional: Discord Message ID to reply to"
+      }
+    },
+    "required": [
+      "text",
+      "target"
+    ]
+  }
+}
+
