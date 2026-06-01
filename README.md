@@ -74,6 +74,7 @@
 
 ### Community Tools
 <!-- Add community-built tools here -->
+- [authsome](https://github.com/agentrhq/authsome) - Local credential broker for AI agents. Log in once via OAuth2 or API key, encrypted local vault and a loopback HTTPS proxy inject credentials into outbound provider requests so the agent's process env never holds raw secrets. 45 providers bundled. Useful for Letta agents that call external APIs (GitHub, Slack, Notion, Stripe, etc.) without embedding tokens in the agent's tool config.
 - Your tool here! - Submit a PR
 
 ### Development Tools
