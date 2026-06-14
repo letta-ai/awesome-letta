@@ -76,6 +76,7 @@
 <!-- Add community-built tools here -->
 - Your tool here! - Submit a PR
 
+- [LoneStarOracle MCP](https://github.com/Homie4570/lso-mcp) - 38-tool MCP server giving Letta agents pay-per-call access to 39 live AI data services via x402 micropayments on Base: token forensics, smart contract audits, weather consensus, on-chain intel, DeFi risk, commodity signals, stablecoin monitoring, and more. $0.02-$2.00 USDC per call. No API keys. Live at mcp.lonestaroracle.xyz.
 ### Development Tools
 - [Letta CLI](https://docs.letta.com/cli) - Command-line interface for Letta
 - [Agent Development Environment](https://www.letta.com/blog/introducing-the-agent-development-environment) - Web-based agent IDE
