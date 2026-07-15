@@ -62,6 +62,7 @@
 <!-- Categories for different types of applications -->
 - [Deep research agent](https://github.com/letta-ai/deep-research)
 - [DuckDB agent](https://github.com/letta-ai/letta-duckdb-agent)
+- [Document Q&A with Unstructured Transform](https://github.com/Unstructured-IO/notebooks/blob/main/notebooks/RAG_with_Letta_Archival_Memory_and_Unstructured_Transform_MCP.ipynb) - Parse a document with the Unstructured Transform MCP server and load it into a Letta agent's archival memory for grounded question answering ([open in Colab](https://colab.research.google.com/github/Unstructured-IO/notebooks/blob/main/notebooks/RAG_with_Letta_Archival_Memory_and_Unstructured_Transform_MCP.ipynb)).
 
 ## Tools & Integrations
 
