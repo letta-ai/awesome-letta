@@ -50,9 +50,9 @@
 
 ### Open Source Projects
 - [Claude Subconscious](https://github.com/letta-ai/claude-subconscious) - Give Claude Code a subconscious: a background memory and retrieval runtime for coding agents
-- [Thought stream agent handler](https://tangled.sh/@cameron.pfiffer.org/thought-stream) - Deploy Letta agents onto the thought stream
-- [Thought stream web viewer](https://github.com/letta-ai/thought-stream-website) - An ATProto-powered multi-agent chatroom
-- [Thought stream CLI](https://tangled.org/@cameron.pfiffer.org/thought-stream-cli) - CLI for using the thought stream, not unlike IRC
+- [thought stream](https://tangled.org/cameron.stream/thought-stream) - Experimental Jazz-backed event and agent coordination system with connectors, declared consumers, and processing receipts
+- [thought stream ATProto web viewer](https://github.com/letta-ai/thought-stream-website) - Web viewer for the separate ATProto `stream.thought.blip` chatroom experiment; not a frontend for the Jazz-backed system
+- [thought stream ATProto CLI](https://tangled.org/cameron.stream/thought-stream-cli) - Rust terminal client for reading and publishing `stream.thought.blip` records in the ATProto chatroom experiment
 
 ### Official Examples
 
@@ -175,7 +175,8 @@ Weekly recorded office hours covering the latest Letta features and community Q&
 - [Stateful Agents Meetup: Networks](https://youtu.be/XLjGpNwVf3U) - Recording of the Stateful Agents Meetup hosted by Letta and Nokia
 
 ### Community Tutorials
-- Coming soon - share your tutorial videos!
+- [Building with Letta Agents](https://cameron.stream/knowledge/building-with-letta-agents) - Community-maintained, AI-assisted explanatory guides to persistent agents and the Letta ecosystem; independent of official documentation
+- [Office Hours Guides](https://cameron.stream/knowledge/letta-office-hours) - Community-maintained, AI-assisted guides to Letta Office Hours, linking explanations to the original recordings
 
 ## Community
 
