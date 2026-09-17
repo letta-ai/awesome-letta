@@ -10,7 +10,6 @@
 - [Tutorials & Guides](#tutorials--guides)
 - [Example Projects](#example-projects)
 - [Tools & Integrations](#tools--integrations)
-- [Agentfiles](#agentfiles)
 - [Research & Papers](#research--papers)
 - [Videos & Talks](#videos--talks)
 - [Community](#community)
@@ -104,12 +103,6 @@
 - [Letta Code CLI](https://docs.letta.com/letta-code) - Command-line interface for Letta agents
 - [Agent Development Environment](https://www.letta.com/blog/introducing-the-agent-development-environment) - Web-based agent IDE
 
-## Agentfiles
-
-[Letta's agent file format](https://github.com/letta-ai/agent-file) is a standard file format for serializing stateful AI agents. Learn more about it in the [blog post](https://www.letta.com/blog/agent-file).
-
-Share your agent templates via PR! Include the `.af` file, memory block structure, tools, and a use case description.
-
 ## Research & Papers
 
 ### Research
@@ -156,7 +149,6 @@ Share your agent templates via PR! Include the `.af` file, memory block structur
 - [Letta Evals: Evaluating Agents That Learn](https://www.letta.com/blog/letta-evals) - October 2025
 - [Introducing Letta Filesystem](https://www.letta.com/blog/letta-filesystem) - July 24, 2025
 - [Announcing Letta Client SDKs for Python and TypeScript](https://www.letta.com/blog/announcing-our-sdks) - April 17, 2025
-- [Agent File](https://www.letta.com/blog/agent-file) - April 2, 2025
 - [Introducing the Agent Development Environment](https://www.letta.com/blog/introducing-the-agent-development-environment) - January 15, 2025
 - [Announcing Letta](https://www.letta.com/blog/announcing-letta) - September 23, 2024
 - [MemGPT is now part of Letta](https://www.letta.com/blog/memgpt-and-letta) - September 23, 2024
