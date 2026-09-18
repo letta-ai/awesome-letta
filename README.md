@@ -50,8 +50,7 @@
 
 ### Open Source Projects
 - [Claude Subconscious](https://github.com/letta-ai/claude-subconscious) - Give Claude Code a subconscious: a background memory and retrieval runtime for coding agents
-- [thought stream](https://tangled.org/cameron.stream/thought-stream) - Experimental Jazz-backed event and agent coordination system with connectors, declared consumers, and processing receipts
-- [thought stream ATProto web viewer](https://github.com/letta-ai/thought-stream-website) - Web viewer for the separate ATProto `stream.thought.blip` chatroom experiment; not a frontend for the Jazz-backed system
+- [thought stream ATProto web viewer](https://github.com/letta-ai/thought-stream-website) - Web viewer for the ATProto `stream.thought.blip` chatroom experiment
 - [thought stream ATProto CLI](https://tangled.org/cameron.stream/thought-stream-cli) - Rust terminal client for reading and publishing `stream.thought.blip` records in the ATProto chatroom experiment
 
 ### Official Examples
