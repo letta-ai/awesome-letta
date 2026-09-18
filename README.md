@@ -92,6 +92,7 @@
 - [Letta Voice](https://github.com/letta-ai/letta-voice) - Chat with your Letta agents over a low-latency voice connection
 
 ### Community Tools
+- [Flows](https://tangled.org/cameron.stream/flows) - Experimental TypeScript orchestration DSL for the Letta Agent SDK, with conversation branching and forking, bounded parallelism, and structured results
 - [Social CLI](https://github.com/letta-ai/social-cli) - A unified CLI to connect artificial intelligence to the social web
 - [Hypervigilant](https://github.com/letta-ai/hypervigilant) - A file watcher that sends saved diffs to persistent Letta agents
 - Your tool here! - Submit a PR
