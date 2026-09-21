@@ -193,16 +193,4 @@ Weekly recorded office hours covering the latest Letta features and community Q&
 
 ## Contributing
 
-Contributions are welcome!
-
-**How to contribute:**
-1. Fork this repository
-2. Add your resource in the appropriate category
-3. Ensure your addition follows the format: `[Resource Name](url) - Brief description`
-4. Submit a pull request
-
-**Criteria for inclusion:**
-- Must be related to Letta or stateful agent development
-- Must be functional and actively maintained (for tools/projects)
-- Must provide value to the Letta community
-- Preferably open source (for projects and tools)
+Contributions are welcome! Read the [contribution guidelines](CONTRIBUTING.md), then open a pull request that adds your resource as a single line to the appropriate section.
