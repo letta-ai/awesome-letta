@@ -35,7 +35,7 @@
 
 ### Getting Started
 - [Letta Quickstart](https://docs.letta.com/quickstart) - Official quickstart guide for the Letta API
-- [Letta Code Quickstart](https://docs.letta.com/letta-code/quickstart) - Get started with the Letta Code CLI and desktop app
+- [Letta Code Quickstart](https://docs.letta.com/letta-code/quickstart) - Get started with the Letta Code CLI
 - [DeepLearning.AI Course](https://www.deeplearning.ai/short-courses/llms-as-operating-systems-agent-memory/) - Free course on agent memory with Letta
 - [Create Letta demo applications](https://github.com/letta-ai/create-letta-app) - Create Letta App lets you create apps with Letta
 
@@ -75,7 +75,6 @@
 
 ### Letta Code Ecosystem
 - [Letta Code](https://github.com/letta-ai/letta-code) - Memory-first, model-agnostic open source coding agent with persistent memory, skills, subagents, and mods [[Blog post]](https://www.letta.com/blog/letta-code)
-- [Letta Code Desktop app](https://www.letta.com/blog/introducing-the-letta-code-app) - Desktop app for interacting with deeply personalized agents that learn over time
 - [Skills](https://github.com/letta-ai/skills) - A shared repository of skills for teaching agents new tasks, usable with Letta Code and other harnesses
 - [Mods](https://github.com/letta-ai/mods) - Mod packages and examples for Letta Code: agent-created extensions that adapt the harness itself [[Blog post]](https://www.letta.com/blog/introducing-mods)
 - [Letta ACP](https://github.com/letta-ai/letta-acp) - ACP (Agent Client Protocol) adapter for using stateful Letta agents from Zed and other ACP editors
@@ -138,7 +137,6 @@
 #### Product Announcements & Features
 - [Letta Agents SDK: An SDK for Stateful Agents](https://www.letta.com/blog/introducing-the-letta-agent-sdk) - August 17, 2026
 - [Introducing Mods: Enabling Agents to Self-Improve through Harness-Level Adaptation](https://www.letta.com/blog/introducing-mods) - June 24, 2026
-- [Introducing the Letta Code App](https://www.letta.com/blog/introducing-the-letta-code-app) - April 6, 2026
 - [Building Draft: A Personal Assistant that Learns](https://www.letta.com/blog/building-draft) - March 2026
 - [Orchestrating Claude Code & Codex Agents](https://www.letta.com/blog/orchestrating-coding-agents) - March 16, 2026
 - [Letta's Next Phase](https://www.letta.com/blog/our-next-phase) - March 16, 2026
